@@ -350,9 +350,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'Source Sans 3','Se
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 // SPC GeoJSON URLs used by the Day 1 Threat Summary cards
 const SPC_THREAT_URLS = {
-  tornado: 'https://www.spc.noaa.gov/products/outlook/day1probotlk_torn.nolyr.geojson',
-  hail:    'https://www.spc.noaa.gov/products/outlook/day1probotlk_hail.nolyr.geojson',
-  wind:    'https://www.spc.noaa.gov/products/outlook/day1probotlk_wind.nolyr.geojson',
+  tornado: 'https://www.spc.noaa.gov/products/outlook/day1otlk_torn.nolyr.geojson',
+  hail:    'https://www.spc.noaa.gov/products/outlook/day1otlk_hail.nolyr.geojson',
+  wind:    'https://www.spc.noaa.gov/products/outlook/day1otlk_wind.nolyr.geojson',
 };
 
 const WMO = {0:'Clear Sky',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Foggy',48:'Freezing Fog',51:'Light Drizzle',53:'Drizzle',55:'Dense Drizzle',61:'Light Rain',63:'Moderate Rain',65:'Heavy Rain',71:'Light Snow',73:'Moderate Snow',75:'Heavy Snow',80:'Showers',81:'Rain Showers',82:'Heavy Showers',95:'Thunderstorm',96:'T-Storm w/ Hail',99:'Severe T-Storm'};
@@ -402,15 +402,20 @@ const getThreat = a => {
 
 // ─── CORS PROXY FETCH (JSON) ──────────────────────────────────────────────────
 async function proxyFetch(url) {
+  const enc = encodeURIComponent(url);
   const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${enc}`,
+    `https://corsproxy.io/?url=${enc}`,
+    `https://api.codetabs.com/v1/proxy?quest=${enc}`,
   ];
   for (const p of proxies) {
     try {
       const r = await fetch(p, {cache:'no-store'});
       if (!r.ok) continue;
-      const j = await r.json();
+      const text = await r.text();
+      // Skip HTML error pages returned by some proxies
+      if (!text || text.trim().startsWith('<')) continue;
+      const j = JSON.parse(text);
       if (j?.features) return j;
     } catch {}
   }

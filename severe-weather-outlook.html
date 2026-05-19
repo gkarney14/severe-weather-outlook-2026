@@ -404,16 +404,16 @@ const getThreat = a => {
 async function proxyFetch(url) {
   const enc = encodeURIComponent(url);
   const proxies = [
+    // codetabs requires unencoded URL with trailing slash - most reliable for SPC
+    `https://api.codetabs.com/v1/proxy/?quest=${url}`,
     `https://api.allorigins.win/raw?url=${enc}`,
     `https://corsproxy.io/?url=${enc}`,
-    `https://api.codetabs.com/v1/proxy?quest=${enc}`,
   ];
   for (const p of proxies) {
     try {
       const r = await fetch(p, {cache:'no-store'});
       if (!r.ok) continue;
       const text = await r.text();
-      // Skip HTML error pages returned by some proxies
       if (!text || text.trim().startsWith('<')) continue;
       const j = JSON.parse(text);
       if (j?.features) return j;

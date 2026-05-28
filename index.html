@@ -373,6 +373,55 @@ html,body{background:var(--bg);color:var(--text);font-family:'Source Sans 3','Se
 
       </div><!-- /threat side-by-side -->
 
+      <!-- DAY 3 THREAT - full width -->
+      <div>
+        <div class="sec-lbl">⛈ Day 3 Threat</div>
+        <div id="threat-panel-d3" class="card" style="margin-bottom:0">
+          <div class="card-hdr"><span>Day 3 Threat Summary</span><span class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
+          <div id="threat-validity-d3" style="font-size:10px;color:var(--muted);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border2)">Valid 3 days from refresh</div>
+          <div class="thr-grid" style="grid-template-columns:repeat(4,1fr)">
+
+            <div class="thr-item" id="ti-d3-tornado">
+              <div class="thr-svg" id="tsw-d3-tornado" style="background:#f1f5f9">
+                <svg viewBox="0 0 80 90" width="52" height="52"><ellipse cx="40" cy="18" rx="30" ry="11" fill="#64748b"/><ellipse cx="26" cy="22" rx="16" ry="9" fill="#475569"/><ellipse cx="54" cy="22" rx="16" ry="9" fill="#475569"/><ellipse cx="40" cy="26" rx="30" ry="9" fill="#334155"/><path d="M18 28C20 40,28 55,35 70C37 76,39 82,40 86C41 82,43 76,45 70C52 55,60 40,62 28Z" fill="#64748b" opacity=".9"/><path d="M24 33Q58 38,54 54" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/><path d="M28 44Q56 48,52 61" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".4"/><path d="M33 57Q52 59,49 68" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".35"/><rect x="33" y="84" width="7" height="3" rx="1" fill="#92400e" transform="rotate(-18 36 85)"/><rect x="44" y="86" width="5" height="2" rx="1" fill="#78716c" transform="rotate(22 46 87)"/></svg>
+              </div>
+              <div class="thr-name">Tornado</div>
+              <div id="tb-d3-tornado" class="thr-badge" style="background:#f9fafb;color:#9ca3af;border-color:#e5e7eb;font-size:10px">Checking…</div>
+              <div class="thr-meter"><div id="tf-d3-tornado" class="thr-fill" style="background:#9ca3af"></div></div>
+            </div>
+
+            <div class="thr-item" id="ti-d3-hail">
+              <div class="thr-svg" id="tsw-d3-hail" style="background:#eff6ff">
+                <svg viewBox="0 0 80 90" width="52" height="52"><ellipse cx="40" cy="22" rx="26" ry="10" fill="#94a3b8"/><ellipse cx="28" cy="26" rx="15" ry="8" fill="#7a8fa6"/><ellipse cx="52" cy="26" rx="15" ry="8" fill="#7a8fa6"/><ellipse cx="40" cy="30" rx="28" ry="9" fill="#64748b"/><circle cx="22" cy="48" r="5" fill="#bfdbfe" stroke="#93c5fd" stroke-width="1.2"/><circle cx="37" cy="54" r="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2"/><circle cx="52" cy="46" r="5" fill="#bfdbfe" stroke="#93c5fd" stroke-width="1.2"/><circle cx="62" cy="58" r="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2"/><circle cx="28" cy="66" r="5.5" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.5"/><circle cx="48" cy="70" r="4.5" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.2"/><circle cx="34" cy="51" r="1.5" fill="white" opacity=".7"/><circle cx="25" cy="45" r="1" fill="white" opacity=".7"/></svg>
+              </div>
+              <div class="thr-name">Hail</div>
+              <div id="tb-d3-hail" class="thr-badge" style="background:#f9fafb;color:#9ca3af;border-color:#e5e7eb;font-size:10px">Checking…</div>
+              <div class="thr-meter"><div id="tf-d3-hail" class="thr-fill" style="background:#9ca3af"></div></div>
+            </div>
+
+            <div class="thr-item" id="ti-d3-wind">
+              <div class="thr-svg" id="tsw-d3-wind" style="background:#f0fdf4">
+                <svg viewBox="0 0 80 90" width="52" height="52"><path d="M8 28Q30 18,55 26Q68 30,72 26Q76 22,72 18Q65 14,55 20" stroke="#94a3b8" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M5 42Q25 32,58 40Q72 44,74 40" stroke="#64748b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M8 56Q32 46,62 54Q70 57,68 62Q65 68,57 66Q48 63,50 56" stroke="#94a3b8" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M10 70Q28 62,50 68" stroke="#cbd5e1" stroke-width="3" fill="none" stroke-linecap="round"/><line x1="64" y1="88" x2="66" y2="60" stroke="#92400e" stroke-width="3" stroke-linecap="round"/><ellipse cx="70" cy="54" rx="9" ry="7" fill="#16a34a" transform="rotate(-25 70 54)"/><ellipse cx="60" cy="50" rx="7" ry="5" fill="#15803d" transform="rotate(-35 60 50)"/></svg>
+              </div>
+              <div class="thr-name">Wind</div>
+              <div id="tb-d3-wind" class="thr-badge" style="background:#f9fafb;color:#9ca3af;border-color:#e5e7eb;font-size:10px">Checking…</div>
+              <div class="thr-meter"><div id="tf-d3-wind" class="thr-fill" style="background:#9ca3af"></div></div>
+            </div>
+
+            <div class="thr-item" id="ti-d3-flood">
+              <div class="thr-svg" id="tsw-d3-flood" style="background:#eff6ff">
+                <svg viewBox="0 0 80 90" width="52" height="52"><line x1="24" y1="8" x2="20" y2="20" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="6" x2="34" y2="18" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><line x1="52" y1="8" x2="48" y2="20" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><line x1="64" y1="10" x2="60" y2="22" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><rect x="20" y="44" width="26" height="20" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/><polygon points="20,44 33,30 46,44" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/><rect x="27" y="54" width="8" height="10" fill="#7dd3fc"/><rect x="50" y="54" width="20" height="9" rx="3" fill="#94a3b8"/><rect x="53" y="50" width="14" height="7" rx="2" fill="#cbd5e1"/><circle cx="54" cy="63" r="3" fill="#475569"/><circle cx="66" cy="63" r="3" fill="#475569"/><path d="M4 64Q14 58,24 64Q34 70,44 64Q54 58,64 64Q74 70,80 64" stroke="#2563eb" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M0 72Q12 66,24 72Q36 78,48 72Q60 66,72 72Q76 75,80 72" stroke="#1d4ed8" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M0 80Q14 75,26 80Q38 85,50 80Q62 75,80 80L80 90L0 90Z" fill="#bfdbfe" opacity=".7"/></svg>
+              </div>
+              <div class="thr-name">Flood</div>
+              <div id="tb-d3-flood" class="thr-badge" style="background:#f9fafb;color:#9ca3af;border-color:#e5e7eb;font-size:10px">No Data</div>
+              <div class="thr-meter"><div id="tf-d3-flood" class="thr-fill" style="background:#9ca3af"></div></div>
+            </div>
+
+          </div>
+          <div style="font-size:9px;margin-top:6px;color:var(--dim);font-weight:600;letter-spacing:.05em;text-align:right">NOAA SPC</div>
+        </div>
+      </div>
+
       <!-- SPC MAPS WITH LEAFLET -->
       <div>
         <div class="sec-lbl">📊 SPC Outlook Maps</div>
@@ -442,6 +491,13 @@ const HAZARDS = [
   {icon:'💨', label:'High Winds',    color:'#059669',bg:'#ecfdf5',kws:['wind']},
   {icon:'🔥', label:'Fire Weather',  color:'#ea580c',bg:'#fff7ed',kws:['fire','red flag']},
 ];
+
+// SPC MapServer layer IDs per day: tornado, hail, wind
+const SPC_DAY_LAYERS = {
+  1: { tornado: 3, hail: 5, wind: 7 },
+  2: { tornado: 10, hail: 12, wind: 14 },
+  3: { tornado: 17, hail: 19, wind: 21 },
+};
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let S = {alerts:[],obs:null,forecast:[],nwsOffice:null,locName:'',threatKey:'NONE',lat:null,lon:null};
@@ -513,6 +569,7 @@ function renderAll() {
   renderBanner(); renderObs(); renderAlerts(); renderForecast();
   renderThreats();
   renderThreatsDay2();
+  renderThreatsDay3();
   setTimeout(() => initSPCMap(), 100);
   document.getElementById('left-col').style.display='block';
   document.getElementById('grid').classList.add('two-col');
@@ -521,15 +578,21 @@ function renderAll() {
   if (mins>0) startRefresh(mins);
 }
 
-function updateThreatValidity() {
-  const now=S.refreshTime||new Date();
-  const end=new Date(now.getTime()+24*60*60*1000);
-  const fmt=(t,includeTime=false)=>{
-    if(includeTime) return t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
-    return t.toLocaleString('en-US',{month:'short',day:'numeric',hour12:true});
-  };
-  const el=document.getElementById('threat-validity');
-  if(el) el.textContent=`Valid 24 hours from refresh • ${fmt(now,true)} to ${fmt(end,true)}`;
+function updateThreatValidity(day = 1) {
+  const elId = day === 1 ? 'threat-validity' : `threat-validity-d${day}`;
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const now = S.refreshTime || new Date();
+  const offsetMs = (day - 1) * 24 * 60 * 60 * 1000;
+  const start = new Date(now.getTime() + offsetMs);
+  const end   = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+  const fmtFull = t => t.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
+  const fmtDate = t => t.toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric'});
+  if (day === 1) {
+    el.textContent = `Valid 24 hours from refresh • ${fmtFull(start)} to ${fmtFull(end)}`;
+  } else {
+    el.textContent = `Valid ${fmtDate(start)} → ${fmtDate(end)}`;
+  }
 }
 
 function renderBanner() {
@@ -668,51 +731,48 @@ function floodRisk(){
   return {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
 }
 
-function applyRisk(id,risk){
-  const item=document.getElementById('ti-'+id);
-  const badge=document.getElementById('tb-'+id);
-  const fill=document.getElementById('tf-'+id);
-  const wrap=document.getElementById('tsw-'+id);
-  if(!item) return;
-  item.style.borderColor=risk.bdr; item.style.background=risk.bg;
-  badge.textContent=risk.text;
-  badge.style.cssText=`background:${risk.bg};color:${risk.color};border-color:${risk.bdr}`;
-  fill.style.background=risk.color;
-  if(wrap) wrap.style.background=risk.bg;
-  setTimeout(()=>{ fill.style.width=risk.pct+'%'; },60);
+function applyRisk(id, risk, prefix) {
+  const p = prefix ? `${prefix}-` : '';
+  const item  = document.getElementById(`ti-${p}${id}`);
+  const badge = document.getElementById(`tb-${p}${id}`);
+  const fill  = document.getElementById(`tf-${p}${id}`);
+  const wrap  = document.getElementById(`tsw-${p}${id}`);
+  if (!item) return;
+  item.style.borderColor = risk.bdr; item.style.background = risk.bg;
+  badge.textContent = risk.text;
+  badge.style.cssText = `background:${risk.bg};color:${risk.color};border-color:${risk.bdr}`;
+  fill.style.background = risk.color;
+  if (wrap) wrap.style.background = risk.bg;
+  setTimeout(() => { fill.style.width = risk.pct + '%'; }, 60);
 }
 
 async function renderThreats(){
-  // Get flood threat from alerts
+  const NO_RISK = {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
   applyRisk('flood', floodRisk());
-  
-  // Query SPC threats by location using reverse geocoding with point
   try {
-    const result = await querySPCThreatsByPoint(S.lon, S.lat);
+    const result = await querySPCThreats(S.lon, S.lat, 1);
     applyRisk('tornado', probToRisk(result.tornado));
-    applyRisk('hail', probToRisk(result.hail));
-    applyRisk('wind', probToRisk(result.wind));
+    applyRisk('hail',    probToRisk(result.hail));
+    applyRisk('wind',    probToRisk(result.wind));
   } catch(e) {
-    console.warn('Threat lookup error:', e);
-    // Show no risk if lookup fails
-    applyRisk('tornado', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
-    applyRisk('hail', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
-    applyRisk('wind', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
+    console.warn('Day 1 threat lookup error:', e);
+    ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK));
   }
-  updateThreatValidity();
+  updateThreatValidity(1);
 }
 
-async function querySPCThreatsByPoint(lon, lat) {
-  const baseUrl = 'https://mapservices.weather.noaa.gov/vector/rest/services/outlooks/SPC_wx_outlks/MapServer';
+async function querySPCThreats(lon, lat, day) {
+  const layers = SPC_DAY_LAYERS[day];
+  if (!layers) return { tornado: null, hail: null, wind: null };
   const result = { tornado: null, hail: null, wind: null };
-  
+  const layerMap = Object.fromEntries(Object.entries(layers).map(([k, v]) => [v, k]));
+
   try {
-    // Use ArcGIS Identify operation for point queries
-    const identifyUrl = `${baseUrl}/identify`;
+    const baseUrl = 'https://mapservices.weather.noaa.gov/vector/rest/services/outlooks/SPC_wx_outlks/MapServer';
     const params = new URLSearchParams({
       geometry: JSON.stringify({ x: lon, y: lat }),
       geometryType: 'esriGeometryPoint',
-      layers: '3,5,7',
+      layers: Object.values(layers).join(','),
       mapExtent: '-126,24,-66,50',
       mapWidth: 1024,
       mapHeight: 768,
@@ -721,120 +781,53 @@ async function querySPCThreatsByPoint(lon, lat) {
       sr: '4326',
       f: 'json'
     });
-    
-    const url = `${identifyUrl}?${params}`;
-    const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-    
-    if(!resp.ok) {
-      console.error('SPC Identify failed:', resp.status);
-      return result;
-    }
-    
+
+    const resp = await fetch(`${baseUrl}/identify?${params}`, { mode: 'cors', credentials: 'omit' });
+    if (!resp.ok) { console.error(`SPC Day ${day} Identify failed:`, resp.status); return result; }
+
     const data = await resp.json();
-    if(data.results && Array.isArray(data.results)) {
+    if (data.results && Array.isArray(data.results)) {
       data.results.forEach(item => {
-        const layerId = item.layerId;
+        const threat = layerMap[item.layerId];
         const dn = parseInt(item.attributes?.dn || 0, 10);
-        
-        if(dn > 0) {
-          if(layerId === 3) result.tornado = { dn, label: String(dn) };
-          else if(layerId === 5) result.hail = { dn, label: String(dn) };
-          else if(layerId === 7) result.wind = { dn, label: String(dn) };
-        }
+        if (threat && dn > 0) result[threat] = { dn, label: String(dn) };
       });
     }
   } catch(e) {
-    console.error('SPC Identify error:', e.message);
+    console.error(`SPC Day ${day} Identify error:`, e.message);
   }
-  
+
   return result;
 }
 
 async function renderThreatsDay2(){
+  const NO_RISK = {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
+  applyRisk('flood', floodRisk(), 'd2');
   try {
-    const result = await querySPCThreatsByPointDay2(S.lon, S.lat);
-    applyRiskDay2('tornado', probToRisk(result.tornado));
-    applyRiskDay2('hail', probToRisk(result.hail));
-    applyRiskDay2('wind', probToRisk(result.wind));
+    const result = await querySPCThreats(S.lon, S.lat, 2);
+    applyRisk('tornado', probToRisk(result.tornado), 'd2');
+    applyRisk('hail',    probToRisk(result.hail), 'd2');
+    applyRisk('wind',    probToRisk(result.wind), 'd2');
   } catch(e) {
     console.warn('Day 2 threat lookup error:', e);
-    applyRiskDay2('tornado', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
-    applyRiskDay2('hail', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
-    applyRiskDay2('wind', {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'});
+    ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK, 'd2'));
   }
-  updateThreatValidityDay2();
+  updateThreatValidity(2);
 }
 
-async function querySPCThreatsByPointDay2(lon, lat) {
-  const baseUrl = 'https://mapservices.weather.noaa.gov/vector/rest/services/outlooks/SPC_wx_outlks/MapServer';
-  const result = { tornado: null, hail: null, wind: null };
-  
+async function renderThreatsDay3(){
+  const NO_RISK = {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
+  applyRisk('flood', {text:'No Data',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'}, 'd3');
   try {
-    const identifyUrl = `${baseUrl}/identify`;
-    const params = new URLSearchParams({
-      geometry: JSON.stringify({ x: lon, y: lat }),
-      geometryType: 'esriGeometryPoint',
-      layers: '10,12,14',
-      mapExtent: '-126,24,-66,50',
-      mapWidth: 1024,
-      mapHeight: 768,
-      tolerance: 10,
-      imageDisplay: '1024,768,96',
-      sr: '4326',
-      f: 'json'
-    });
-    
-    const url = `${identifyUrl}?${params}`;
-    const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-    
-    if(!resp.ok) {
-      console.error('Day 2 Identify failed:', resp.status);
-      return result;
-    }
-    
-    const data = await resp.json();
-    if(data.results && Array.isArray(data.results)) {
-      data.results.forEach(item => {
-        const layerId = item.layerId;
-        const dn = parseInt(item.attributes?.dn || 0, 10);
-        
-        if(dn > 0) {
-          if(layerId === 10) result.tornado = { dn, label: String(dn) };
-          else if(layerId === 12) result.hail = { dn, label: String(dn) };
-          else if(layerId === 14) result.wind = { dn, label: String(dn) };
-        }
-      });
-    }
+    const result = await querySPCThreats(S.lon, S.lat, 3);
+    applyRisk('tornado', probToRisk(result.tornado), 'd3');
+    applyRisk('hail',    probToRisk(result.hail), 'd3');
+    applyRisk('wind',    probToRisk(result.wind), 'd3');
   } catch(e) {
-    console.error('Day 2 Identify error:', e.message);
+    console.warn('Day 3 threat lookup error:', e);
+    ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK, 'd3'));
   }
-  
-  return result;
-}
-
-function applyRiskDay2(id,risk){
-  const item=document.getElementById('ti-d2-'+id);
-  const badge=document.getElementById('tb-d2-'+id);
-  const fill=document.getElementById('tf-d2-'+id);
-  const wrap=document.getElementById('tsw-d2-'+id);
-  if(!item) return;
-  item.style.borderColor=risk.bdr; item.style.background=risk.bg;
-  badge.textContent=risk.text;
-  badge.style.cssText=`background:${risk.bg};color:${risk.color};border-color:${risk.bdr}`;
-  fill.style.background=risk.color;
-  wrap.style.background=risk.bg;
-  setTimeout(()=>{ fill.style.width=risk.pct+'%'; },60);
-}
-
-function updateThreatValidityDay2(){
-  const now=S.refreshTime||new Date();
-  const end=new Date(now.getTime()+24*60*60*1000);
-  const fmt=(t,includeTime=false)=>{
-    if(includeTime) return t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
-    return t.toLocaleString('en-US',{month:'short',day:'numeric',hour12:true});
-  };
-  const el=document.getElementById('threat-validity-d2');
-  if(el) el.textContent=`Valid ${fmt(now,true)} → ${fmt(end)}`;
+  updateThreatValidity(3);
 }
 
 // ─── WIRING ───────────────────────────────────────────────────────────────────

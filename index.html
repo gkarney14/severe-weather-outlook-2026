@@ -277,7 +277,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Source Sans 3','Se
         <div>
           <div class="sec-lbl">⛈ Day 1 Threat</div>
           <div id="threat-panel" class="card" style="margin-bottom:0">
-            <div class="card-hdr"><span>Day 1 Threat Summary</span><span class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
+            <div class="card-hdr"><span>Day 1 Threat Summary</span><span id="cat-badge-d1" class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
             <div id="threat-validity" style="font-size:10px;color:var(--muted);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border2)">Valid 24 hours from refresh</div>
             <div class="thr-grid" style="grid-template-columns:1fr 1fr">
 
@@ -326,7 +326,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Source Sans 3','Se
         <div>
           <div class="sec-lbl">⛈ Day 2 Threat</div>
           <div id="threat-panel-d2" class="card" style="margin-bottom:0">
-            <div class="card-hdr"><span>Day 2 Threat Summary</span><span class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
+            <div class="card-hdr"><span>Day 2 Threat Summary</span><span id="cat-badge-d2" class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
             <div id="threat-validity-d2" style="font-size:10px;color:var(--muted);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border2)">Valid 24 hours from refresh</div>
             <div class="thr-grid" style="grid-template-columns:1fr 1fr">
 
@@ -377,7 +377,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Source Sans 3','Se
       <div>
         <div class="sec-lbl">⛈ Day 3 Threat</div>
         <div id="threat-panel-d3" class="card" style="margin-bottom:0">
-          <div class="card-hdr"><span>Day 3 Threat Summary</span><span class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
+          <div class="card-hdr"><span>Day 3 Threat Summary</span><span id="cat-badge-d3" class="badge" style="background:var(--bg);color:var(--muted);border-color:var(--border)">SPC</span></div>
           <div id="threat-validity-d3" style="font-size:10px;color:var(--muted);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border2)">Valid 3 days from refresh</div>
           <div class="thr-grid" style="grid-template-columns:repeat(4,1fr)">
 
@@ -492,11 +492,21 @@ const HAZARDS = [
   {icon:'🔥', label:'Fire Weather',  color:'#ea580c',bg:'#fff7ed',kws:['fire','red flag']},
 ];
 
-// SPC MapServer layer IDs per day: tornado, hail, wind
+// SPC MapServer layer IDs per day: categorical + probability layers
 const SPC_DAY_LAYERS = {
-  1: { tornado: 3, hail: 5, wind: 7 },
-  2: { tornado: 10, hail: 12, wind: 14 },
-  3: { tornado: 17, hail: 19, wind: 21 },
+  1: { categorical: 2, tornado: 3, hail: 5, wind: 7 },
+  2: { categorical: 9, tornado: 10, hail: 12, wind: 14 },
+  3: { categorical: 16, tornado: 17, hail: 19, wind: 21 },
+};
+
+// SPC categorical dn encoding: 3=TSTM, 4=MRGL, 5=SLGT, 6=ENH, 7=MDT, 8=HIGH
+const SPC_CAT = {
+  3: { label: 'TSTM', color: '#6b7280', bg: '#f9fafb', bdr: '#d1d5db' },
+  4: { label: 'MRGL', color: '#16a34a', bg: '#f0fdf4', bdr: '#86efac' },
+  5: { label: 'SLGT', color: '#ca8a04', bg: '#fefce8', bdr: '#fde047' },
+  6: { label: 'ENH',  color: '#ea580c', bg: '#fff7ed', bdr: '#fdba74' },
+  7: { label: 'MDT',  color: '#dc2626', bg: '#fef2f2', bdr: '#fca5a5' },
+  8: { label: 'HIGH', color: '#7c3aed', bg: '#f5f3ff', bdr: '#c4b5fd' },
 };
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -754,6 +764,7 @@ async function renderThreats(){
     applyRisk('tornado', probToRisk(result.tornado));
     applyRisk('hail',    probToRisk(result.hail));
     applyRisk('wind',    probToRisk(result.wind));
+    applyCatBadge('d1', result.categorical);
   } catch(e) {
     console.warn('Day 1 threat lookup error:', e);
     ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK));
@@ -761,10 +772,19 @@ async function renderThreats(){
   updateThreatValidity(1);
 }
 
+function applyCatBadge(dayId, catResult) {
+  const el = document.getElementById(`cat-badge-${dayId}`);
+  if (!el) return;
+  const cat = catResult && SPC_CAT[catResult.dn];
+  if (!cat) { el.textContent = 'SPC'; el.removeAttribute('style'); return; }
+  el.textContent = cat.label;
+  el.style.cssText = `background:${cat.bg};color:${cat.color};border-color:${cat.bdr}`;
+}
+
 async function querySPCThreats(lon, lat, day) {
   const layers = SPC_DAY_LAYERS[day];
-  if (!layers) return { tornado: null, hail: null, wind: null };
-  const result = { tornado: null, hail: null, wind: null };
+  if (!layers) return { categorical: null, tornado: null, hail: null, wind: null };
+  const result = { categorical: null, tornado: null, hail: null, wind: null };
   const layerMap = Object.fromEntries(Object.entries(layers).map(([k, v]) => [v, k]));
 
   try {
@@ -808,6 +828,7 @@ async function renderThreatsDay2(){
     applyRisk('tornado', probToRisk(result.tornado), 'd2');
     applyRisk('hail',    probToRisk(result.hail), 'd2');
     applyRisk('wind',    probToRisk(result.wind), 'd2');
+    applyCatBadge('d2', result.categorical);
   } catch(e) {
     console.warn('Day 2 threat lookup error:', e);
     ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK, 'd2'));
@@ -823,6 +844,7 @@ async function renderThreatsDay3(){
     applyRisk('tornado', probToRisk(result.tornado), 'd3');
     applyRisk('hail',    probToRisk(result.hail), 'd3');
     applyRisk('wind',    probToRisk(result.wind), 'd3');
+    applyCatBadge('d3', result.categorical);
   } catch(e) {
     console.warn('Day 3 threat lookup error:', e);
     ['tornado','hail','wind'].forEach(t => applyRisk(t, NO_RISK, 'd3'));

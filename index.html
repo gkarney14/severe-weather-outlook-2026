@@ -492,11 +492,26 @@ const HAZARDS = [
   {icon:'🔥', label:'Fire Weather',  color:'#ea580c',bg:'#fff7ed',kws:['fire','red flag']},
 ];
 
-// SPC MapServer layer IDs per day: categorical + probability layers
-const SPC_DAY_LAYERS = {
-  1: { categorical: 2, tornado: 3, hail: 5, wind: 7 },
-  2: { categorical: 9, tornado: 10, hail: 12, wind: 14 },
-  3: { categorical: 16, tornado: 17, hail: 19, wind: 21 },
+// SPC public GeoJSON outlook data — updated by NOAA SPC
+const SPC_GJ_URLS = {
+  1: {
+    categorical: 'https://www.spc.noaa.gov/products/outlook/day1otlk_cat.lyr.geojson',
+    tornado:     'https://www.spc.noaa.gov/products/outlook/day1otlk_torn.lyr.geojson',
+    hail:        'https://www.spc.noaa.gov/products/outlook/day1otlk_hail.lyr.geojson',
+    wind:        'https://www.spc.noaa.gov/products/outlook/day1otlk_wind.lyr.geojson',
+  },
+  2: {
+    categorical: 'https://www.spc.noaa.gov/products/outlook/day2otlk_cat.lyr.geojson',
+    tornado:     'https://www.spc.noaa.gov/products/outlook/day2otlk_torn.lyr.geojson',
+    hail:        'https://www.spc.noaa.gov/products/outlook/day2otlk_hail.lyr.geojson',
+    wind:        'https://www.spc.noaa.gov/products/outlook/day2otlk_wind.lyr.geojson',
+  },
+  3: {
+    categorical: 'https://www.spc.noaa.gov/products/outlook/day3otlk_cat.lyr.geojson',
+    tornado:     'https://www.spc.noaa.gov/products/outlook/day3otlk_torn.lyr.geojson',
+    hail:        'https://www.spc.noaa.gov/products/outlook/day3otlk_hail.lyr.geojson',
+    wind:        'https://www.spc.noaa.gov/products/outlook/day3otlk_wind.lyr.geojson',
+  },
 };
 
 // SPC categorical dn encoding: 3=TSTM, 4=MRGL, 5=SLGT, 6=ENH, 7=MDT, 8=HIGH
@@ -719,6 +734,57 @@ function renderForecast() {
     </div>`).join('');
 }
 
+// ─── SPC GEOJSON POINT QUERY ──────────────────────────────────────────────────
+// Ray-casting point-in-polygon; GeoJSON coords are [lon, lat]
+function ptInRing(lat, lon, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi))
+      inside = !inside;
+  }
+  return inside;
+}
+
+function ptInFeature(lat, lon, feature) {
+  const g = feature.geometry;
+  if (!g) return false;
+  const polys = g.type === 'Polygon' ? [g.coordinates]
+              : g.type === 'MultiPolygon' ? g.coordinates : [];
+  return polys.some(poly =>
+    ptInRing(lat, lon, poly[0]) && !poly.slice(1).some(h => ptInRing(lat, lon, h))
+  );
+}
+
+function riskFromGeoJSON(lat, lon, gj) {
+  if (!gj?.features) return null;
+  let best = 0;
+  for (const f of gj.features) {
+    if (!ptInFeature(lat, lon, f)) continue;
+    const dn = parseInt(f.properties?.dn ?? f.properties?.DN ?? 0, 10);
+    if (dn > best) best = dn;
+  }
+  return best > 0 ? { dn: best, label: String(best) } : null;
+}
+
+async function querySPCThreats(lon, lat, day) {
+  const urls = SPC_GJ_URLS[day];
+  if (!urls) return { categorical: null, tornado: null, hail: null, wind: null };
+  const hdrs = { headers: { 'User-Agent': 'SevereWeatherOutlook/1.0' } };
+  const [catR, tornR, hailR, windR] = await Promise.allSettled([
+    fetch(urls.categorical, hdrs).then(r => r.json()),
+    fetch(urls.tornado,     hdrs).then(r => r.json()),
+    fetch(urls.hail,        hdrs).then(r => r.json()),
+    fetch(urls.wind,        hdrs).then(r => r.json()),
+  ]);
+  return {
+    categorical: catR.status  === 'fulfilled' ? riskFromGeoJSON(lat, lon, catR.value)  : null,
+    tornado:     tornR.status === 'fulfilled' ? riskFromGeoJSON(lat, lon, tornR.value) : null,
+    hail:        hailR.status === 'fulfilled' ? riskFromGeoJSON(lat, lon, hailR.value) : null,
+    wind:        windR.status === 'fulfilled' ? riskFromGeoJSON(lat, lon, windR.value) : null,
+  };
+}
+
 // ─── THREAT CARDS ─────────────────────────────────────────────────────────────
 function probToRisk(r){
   if(!r) return {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
@@ -741,6 +807,21 @@ function floodRisk(){
   return {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
 }
 
+// Use specific probability if present; fall back to categorical risk as a floor
+function probOrCatRisk(probResult, catDn) {
+  if (probResult) return probToRisk(probResult);
+  const cat = catDn && SPC_CAT[catDn];
+  if (!cat || cat.label === 'TSTM') return {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
+  const floors = {
+    MRGL: {text:'2% — Marginal',  pct:14, color:'#16a34a', bg:'#f0fdf4', bdr:'#86efac'},
+    SLGT: {text:'5% — Slight',    pct:30, color:'#65a30d', bg:'#f7fee7', bdr:'#bef264'},
+    ENH:  {text:'10% — Enhanced', pct:45, color:'#ca8a04', bg:'#fefce8', bdr:'#fde047'},
+    MDT:  {text:'15% — Moderate', pct:60, color:'#d97706', bg:'#fffbeb', bdr:'#fcd34d'},
+    HIGH: {text:'30% — High',     pct:76, color:'#dc2626', bg:'#fef2f2', bdr:'#fca5a5'},
+  };
+  return floors[cat.label] || {text:'No Risk',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'};
+}
+
 function applyRisk(id, risk, prefix) {
   const p = prefix ? `${prefix}-` : '';
   const item  = document.getElementById(`ti-${p}${id}`);
@@ -761,9 +842,10 @@ async function renderThreats(){
   applyRisk('flood', floodRisk());
   try {
     const result = await querySPCThreats(S.lon, S.lat, 1);
-    applyRisk('tornado', probToRisk(result.tornado));
-    applyRisk('hail',    probToRisk(result.hail));
-    applyRisk('wind',    probToRisk(result.wind));
+    const catDn = result.categorical?.dn;
+    applyRisk('tornado', probOrCatRisk(result.tornado, catDn));
+    applyRisk('hail',    probOrCatRisk(result.hail,    catDn));
+    applyRisk('wind',    probOrCatRisk(result.wind,    catDn));
     applyCatBadge('d1', result.categorical);
   } catch(e) {
     console.warn('Day 1 threat lookup error:', e);
@@ -776,48 +858,9 @@ function applyCatBadge(dayId, catResult) {
   const el = document.getElementById(`cat-badge-${dayId}`);
   if (!el) return;
   const cat = catResult && SPC_CAT[catResult.dn];
-  if (!cat) { el.textContent = 'SPC'; el.removeAttribute('style'); return; }
+  if (!cat) { el.textContent = 'SPC'; el.style.cssText = 'background:var(--bg);color:var(--muted);border-color:var(--border)'; return; }
   el.textContent = cat.label;
   el.style.cssText = `background:${cat.bg};color:${cat.color};border-color:${cat.bdr}`;
-}
-
-async function querySPCThreats(lon, lat, day) {
-  const layers = SPC_DAY_LAYERS[day];
-  if (!layers) return { categorical: null, tornado: null, hail: null, wind: null };
-  const result = { categorical: null, tornado: null, hail: null, wind: null };
-  const layerMap = Object.fromEntries(Object.entries(layers).map(([k, v]) => [v, k]));
-
-  try {
-    const baseUrl = 'https://mapservices.weather.noaa.gov/vector/rest/services/outlooks/SPC_wx_outlks/MapServer';
-    const params = new URLSearchParams({
-      geometry: JSON.stringify({ x: lon, y: lat }),
-      geometryType: 'esriGeometryPoint',
-      layers: Object.values(layers).join(','),
-      mapExtent: '-126,24,-66,50',
-      mapWidth: 1024,
-      mapHeight: 768,
-      tolerance: 10,
-      imageDisplay: '1024,768,96',
-      sr: '4326',
-      f: 'json'
-    });
-
-    const resp = await fetch(`${baseUrl}/identify?${params}`, { mode: 'cors', credentials: 'omit' });
-    if (!resp.ok) { console.error(`SPC Day ${day} Identify failed:`, resp.status); return result; }
-
-    const data = await resp.json();
-    if (data.results && Array.isArray(data.results)) {
-      data.results.forEach(item => {
-        const threat = layerMap[item.layerId];
-        const dn = parseInt(item.attributes?.dn || 0, 10);
-        if (threat && dn > 0) result[threat] = { dn, label: String(dn) };
-      });
-    }
-  } catch(e) {
-    console.error(`SPC Day ${day} Identify error:`, e.message);
-  }
-
-  return result;
 }
 
 async function renderThreatsDay2(){
@@ -825,9 +868,10 @@ async function renderThreatsDay2(){
   applyRisk('flood', floodRisk(), 'd2');
   try {
     const result = await querySPCThreats(S.lon, S.lat, 2);
-    applyRisk('tornado', probToRisk(result.tornado), 'd2');
-    applyRisk('hail',    probToRisk(result.hail), 'd2');
-    applyRisk('wind',    probToRisk(result.wind), 'd2');
+    const catDn = result.categorical?.dn;
+    applyRisk('tornado', probOrCatRisk(result.tornado, catDn), 'd2');
+    applyRisk('hail',    probOrCatRisk(result.hail,    catDn), 'd2');
+    applyRisk('wind',    probOrCatRisk(result.wind,    catDn), 'd2');
     applyCatBadge('d2', result.categorical);
   } catch(e) {
     console.warn('Day 2 threat lookup error:', e);
@@ -841,9 +885,10 @@ async function renderThreatsDay3(){
   applyRisk('flood', {text:'No Data',pct:0,color:'#9ca3af',bg:'#f9fafb',bdr:'#e5e7eb'}, 'd3');
   try {
     const result = await querySPCThreats(S.lon, S.lat, 3);
-    applyRisk('tornado', probToRisk(result.tornado), 'd3');
-    applyRisk('hail',    probToRisk(result.hail), 'd3');
-    applyRisk('wind',    probToRisk(result.wind), 'd3');
+    const catDn = result.categorical?.dn;
+    applyRisk('tornado', probOrCatRisk(result.tornado, catDn), 'd3');
+    applyRisk('hail',    probOrCatRisk(result.hail,    catDn), 'd3');
+    applyRisk('wind',    probOrCatRisk(result.wind,    catDn), 'd3');
     applyCatBadge('d3', result.categorical);
   } catch(e) {
     console.warn('Day 3 threat lookup error:', e);

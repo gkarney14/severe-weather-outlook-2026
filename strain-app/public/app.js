@@ -3,9 +3,11 @@ const state = {
   strains: [],
   favorites: new Map(),   // strain_id → favorite row
   filters: { type: 'all', sort: 'name' },
+  collFilters: { type: 'all', rating: 'all', retry: 'all', query: '' },
   query: '',
   searchDebounce: null,
-  pendingStrainId: null,  // for save modal
+  collDebounce: null,
+  pendingStrainId: null,
 };
 
 const ALL_EFFECTS = ['Relaxed','Happy','Euphoric','Uplifted','Energetic','Creative',
@@ -67,13 +69,16 @@ function strainCard(s, fromCollection = false) {
   const isSaved = !!fav || fromCollection;
   const div = document.createElement('div');
   div.className = `strain-card${isSaved ? ' is-saved' : ''}`;
-  div.dataset.id = s.id ?? s.strain_id;
+  div.dataset.id = fromCollection ? s.strain_id : s.id;
 
   const thc = thcLabel(s);
   const cbd = cbdLabel(s);
 
   if (fromCollection) {
     const f = s; // full favorite+strain join
+    const retryBadge = f.would_try_again
+      ? `<span class="retry-badge retry-yes">👍 Again</span>`
+      : `<span class="retry-badge retry-no">👎 Pass</span>`;
     div.innerHTML = `
       <div class="saved-dot"></div>
       <div class="card-header">
@@ -87,13 +92,17 @@ function strainCard(s, fromCollection = false) {
       </div>
       <div class="chip-row">${chips(f.effects, 'chip-effect', 3)}</div>
       <div class="chip-row">${chips(f.flavors, 'chip-flavor', 3)}</div>
+      ${f.personal_effects?.length ? `<div class="chip-row">${f.personal_effects.slice(0,3).map(e=>`<span class="chip chip-personal">${e}</span>`).join('')}</div>` : ''}
       ${f.notes ? `<div class="card-note-preview">${escHtml(f.notes)}</div>` : ''}
       <div class="card-footer">
         <div class="card-actions">
           <button class="btn-card" onclick="editFav(${f.id},event)">✏ Edit</button>
           <button class="btn-card del" onclick="deleteFav(${f.id},event)">✕ Remove</button>
         </div>
-        ${f.date_tried ? `<span style="font-size:.72rem;color:var(--text-3)">${f.date_tried}</span>` : ''}
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.2rem">
+          ${retryBadge}
+          ${f.date_tried ? `<span style="font-size:.7rem;color:var(--text-3)">${f.date_tried}</span>` : ''}
+        </div>
       </div>`;
   } else {
     div.innerHTML = `
@@ -119,7 +128,7 @@ function strainCard(s, fromCollection = false) {
 
   div.addEventListener('click', e => {
     if (e.target.closest('.btn-save-card,.btn-card')) return;
-    showDetail(s.id ?? s.strain_id ?? s.id);
+    showDetail(fromCollection ? s.strain_id : s.id);
   });
 
   return div;
@@ -145,15 +154,94 @@ function renderGrid(strains) {
 function renderCollection() {
   const grid  = document.getElementById('collection-grid');
   const empty = document.getElementById('empty-collection');
+  const meta  = document.getElementById('coll-meta');
   grid.innerHTML = '';
-  const favs = [...state.favorites.values()];
+
+  const { type, rating, retry, query } = state.collFilters;
+  let favs = [...state.favorites.values()];
+
   if (!favs.length) {
     empty.classList.remove('hidden');
+    meta.classList.add('hidden');
     return;
   }
-  empty.classList.add('hidden');
+
+  // Apply filters
+  if (query) {
+    const q = query.toLowerCase();
+    favs = favs.filter(f =>
+      f.name.toLowerCase().includes(q) ||
+      f.notes?.toLowerCase().includes(q) ||
+      f.effects?.some(e => e.toLowerCase().includes(q)) ||
+      f.flavors?.some(fl => fl.toLowerCase().includes(q))
+    );
+  }
+  if (type !== 'all') favs = favs.filter(f => f.type === type);
+  if (rating !== 'all') favs = favs.filter(f => f.rating >= +rating);
+  if (retry === 'yes') favs = favs.filter(f => f.would_try_again);
+  if (retry === 'no')  favs = favs.filter(f => !f.would_try_again);
+
+  empty.classList.toggle('hidden', favs.length > 0);
+  meta.classList.toggle('hidden', favs.length === state.favorites.size);
+  if (favs.length !== state.favorites.size) {
+    meta.textContent = `${favs.length} of ${state.favorites.size} strains`;
+  }
+
   favs.forEach(f => grid.appendChild(strainCard(f, true)));
   renderStats();
+}
+
+/* ── Suggest a strain ──────────────────────────────────────────── */
+function openSuggest() {
+  document.getElementById('suggest-results').innerHTML = '';
+  document.getElementById('suggest-type').value = 'all';
+  document.getElementById('suggest-thc').value = 30;
+  document.getElementById('suggest-thc-val').textContent = 'up to 30%';
+  const picker = document.getElementById('suggest-picker');
+  picker.innerHTML = ALL_EFFECTS.map(e =>
+    `<span class="effect-pill" data-effect="${e}">${e}</span>`
+  ).join('');
+  openModal('suggest-modal');
+}
+
+async function runSuggest() {
+  const wantedEffects = [...document.querySelectorAll('#suggest-picker .effect-pill.selected')]
+    .map(p => p.dataset.effect);
+  const type  = document.getElementById('suggest-type').value;
+  const maxThc = +document.getElementById('suggest-thc').value;
+
+  const params = new URLSearchParams({ type, sort: 'thc_high', q: wantedEffects[0] || '' });
+  const strains = await api(`/api/strains/search?${params}`);
+
+  let scored = strains
+    .filter(s => s.thc_max <= maxThc)
+    .map(s => {
+      const matches = wantedEffects.filter(e => s.effects.includes(e)).length;
+      return { ...s, _score: matches };
+    })
+    .sort((a, b) => b._score - a._score || b.thc_max - a.thc_max)
+    .slice(0, 6);
+
+  const res = document.getElementById('suggest-results');
+  if (!scored.length) {
+    res.innerHTML = `<p style="color:var(--text-3);text-align:center;padding:1rem">No strains matched your criteria. Try broadening your filters.</p>`;
+    return;
+  }
+
+  res.innerHTML = `<h4 style="font-size:.8rem;color:var(--text-3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.6px">Top Matches</h4>
+    ${scored.map(s => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);cursor:pointer"
+           onclick="closeModal('suggest-modal');showDetail(${s.id})">
+        <div>
+          <span style="font-weight:600">${s.name}</span>
+          ${typeBadge(s.type)}
+          <span style="font-size:.72rem;color:var(--text-3);margin-left:.3rem">THC ${thcLabel(s)}</span>
+        </div>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:flex-end;max-width:160px">
+          ${s.effects.filter(e => wantedEffects.includes(e)).map(e =>
+            `<span class="chip chip-effect" style="font-size:.65rem">${e}</span>`).join('')}
+        </div>
+      </div>`).join('')}`;
 }
 
 /* ── Stats bar ─────────────────────────────────────────────────── */
@@ -519,6 +607,38 @@ document.getElementById('fav-form').addEventListener('submit', async e => {
   renderCollection();
   updateCollectionBadge();
   toast(id ? 'Collection updated' : 'Saved to collection ✓');
+});
+
+// Collection search/filter
+document.getElementById('coll-search').addEventListener('input', e => {
+  state.collFilters.query = e.target.value;
+  clearTimeout(state.collDebounce);
+  state.collDebounce = setTimeout(renderCollection, 200);
+});
+
+document.querySelectorAll('[data-cfilter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.dataset.cfilter;
+    document.querySelectorAll(`[data-cfilter="${group}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.collFilters[group] = btn.dataset.value;
+    renderCollection();
+  });
+});
+
+// Suggest button
+document.getElementById('btn-suggest').addEventListener('click', openSuggest);
+
+// Suggest effects picker
+document.getElementById('suggest-picker').addEventListener('click', e => {
+  const pill = e.target.closest('.effect-pill');
+  if (!pill) return;
+  pill.classList.toggle('selected');
+});
+
+// Suggest THC slider
+document.getElementById('suggest-thc').addEventListener('input', e => {
+  document.getElementById('suggest-thc-val').textContent = `up to ${e.target.value}%`;
 });
 
 // Close modals on overlay click

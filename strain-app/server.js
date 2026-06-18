@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const fetch = require('node-fetch');
 const db = require('./db/database');
 
 const app = express();

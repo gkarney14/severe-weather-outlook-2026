@@ -309,6 +309,19 @@ textarea { resize: vertical; font-family: inherit; }
 .web-related-item:last-child { border-bottom: none; }
 .web-related-item a { color: var(--green); text-decoration: none; }
 
+/* ── Retry badge ─────────────────────────────────────────────────── */
+.retry-badge {
+  font-size: .68rem; padding: .15rem .45rem; border-radius: 20px;
+  font-weight: 600; white-space: nowrap;
+}
+.retry-yes { background: rgba(63,185,80,.1);  color: var(--green); border: 1px solid rgba(63,185,80,.25); }
+.retry-no  { background: rgba(248,81,73,.1);  color: var(--red);   border: 1px solid rgba(248,81,73,.25); }
+
+.chip-personal {
+  border-color: rgba(88,166,255,.3); color: #58a6ff;
+  background: rgba(88,166,255,.07); font-style: italic;
+}
+
 /* ── Collection card extras ──────────────────────────────────── */
 .card-note-preview {
   font-size: .75rem; color: var(--text-3); font-style: italic;

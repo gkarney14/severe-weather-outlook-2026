@@ -67,6 +67,36 @@
       <h2>My Collection</h2>
       <div class="stats-bar" id="stats-bar"></div>
     </div>
+    <div class="search-hero" style="margin-top:.75rem">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="coll-search" placeholder="Filter saved strains…" autocomplete="off">
+        <button class="btn-web" id="btn-suggest" title="Suggest a strain by mood">🎯 Suggest</button>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">Type:</span>
+          <button class="filter-btn active" data-cfilter="type" data-value="all">All</button>
+          <button class="filter-btn sativa" data-cfilter="type" data-value="sativa">Sativa</button>
+          <button class="filter-btn indica" data-cfilter="type" data-value="indica">Indica</button>
+          <button class="filter-btn hybrid" data-cfilter="type" data-value="hybrid">Hybrid</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Rating:</span>
+          <button class="filter-btn active" data-cfilter="rating" data-value="all">All</button>
+          <button class="filter-btn" data-cfilter="rating" data-value="5">★★★★★</button>
+          <button class="filter-btn" data-cfilter="rating" data-value="4">★★★★+</button>
+          <button class="filter-btn" data-cfilter="rating" data-value="3">★★★+</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Retry:</span>
+          <button class="filter-btn active" data-cfilter="retry" data-value="all">All</button>
+          <button class="filter-btn" data-cfilter="retry" data-value="yes">👍 Yes</button>
+          <button class="filter-btn" data-cfilter="retry" data-value="no">👎 No</button>
+        </div>
+      </div>
+    </div>
+    <div class="results-meta hidden" id="coll-meta"></div>
     <div class="strain-grid" id="collection-grid"></div>
     <div class="empty-state hidden" id="empty-collection">
       <span>📂</span>
@@ -179,6 +209,35 @@
           <button type="button" class="btn btn-ghost" onclick="closeModal('custom-modal')">Cancel</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- SUGGEST MODAL -->
+  <div class="modal-overlay hidden" id="suggest-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('suggest-modal')">✕</button>
+      <h3>🎯 Suggest a Strain</h3>
+      <p style="font-size:.85rem;color:var(--text-3);margin-bottom:1rem">Pick the effects you're after and we'll recommend from the database.</p>
+      <label>I want to feel…
+        <div class="effects-picker" id="suggest-picker"></div>
+      </label>
+      <label style="margin-top:.5rem">Type preference
+        <select id="suggest-type">
+          <option value="all">Any</option>
+          <option value="sativa">Sativa (energizing)</option>
+          <option value="indica">Indica (relaxing)</option>
+          <option value="hybrid">Hybrid (balanced)</option>
+        </select>
+      </label>
+      <label>Max THC %
+        <input type="range" id="suggest-thc" min="5" max="35" value="30" style="accent-color:var(--green)">
+        <span id="suggest-thc-val" style="font-size:.78rem;color:var(--yellow)">up to 30%</span>
+      </label>
+      <div class="form-actions" style="margin-top:.75rem">
+        <button class="btn btn-primary" onclick="runSuggest()">Find Strains</button>
+        <button class="btn btn-ghost" onclick="closeModal('suggest-modal')">Cancel</button>
+      </div>
+      <div id="suggest-results" style="margin-top:1rem"></div>
     </div>
   </div>
 

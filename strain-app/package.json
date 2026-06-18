@@ -1,0 +1,21 @@
+{
+  "name": "strain-vault",
+  "version": "1.0.0",
+  "description": "Personal cannabis strain profile manager with web search integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js",
+    "dev": "node --experimental-sqlite --watch server.js"
+  },
+  "keywords": ["cannabis", "strains", "tracker", "notes"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.3",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

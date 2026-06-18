@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strain Vault</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🌿</span>
+        <span class="logo-text">Strain Vault</span>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="search">Search</button>
+        <button class="nav-btn" data-tab="collection">
+          My Collection
+          <span class="badge" id="collection-count">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- SEARCH TAB -->
+  <main id="tab-search" class="tab active">
+    <div class="search-hero">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search strains by name, effect, or flavor…" autocomplete="off">
+        <button id="btn-web-search" class="btn-web" title="Search the web">🌐 Web</button>
+        <button id="btn-add-custom" class="btn-add" title="Add custom strain">＋ Add</button>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">Type:</span>
+          <button class="filter-btn active" data-filter="type" data-value="all">All</button>
+          <button class="filter-btn sativa" data-filter="type" data-value="sativa">Sativa</button>
+          <button class="filter-btn indica" data-filter="type" data-value="indica">Indica</button>
+          <button class="filter-btn hybrid" data-filter="type" data-value="hybrid">Hybrid</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Sort:</span>
+          <select id="sort-select">
+            <option value="name">Name A–Z</option>
+            <option value="thc_high">THC High→Low</option>
+            <option value="thc_low">THC Low→High</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-meta" id="results-meta">Loading strains…</div>
+    <div class="strain-grid" id="strain-grid"></div>
+    <div class="empty-state hidden" id="empty-search">
+      <span>🌱</span>
+      <p>No strains found. Try the 🌐 Web search or add a custom strain.</p>
+    </div>
+  </main>
+
+  <!-- COLLECTION TAB -->
+  <main id="tab-collection" class="tab hidden">
+    <div class="collection-header">
+      <h2>My Collection</h2>
+      <div class="stats-bar" id="stats-bar"></div>
+    </div>
+    <div class="strain-grid" id="collection-grid"></div>
+    <div class="empty-state hidden" id="empty-collection">
+      <span>📂</span>
+      <p>Your collection is empty. Search for a strain and save it!</p>
+    </div>
+  </main>
+
+  <!-- STRAIN DETAIL MODAL -->
+  <div class="modal-overlay hidden" id="detail-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+      <div id="detail-content"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btn-save-strain">＋ Save to Collection</button>
+        <a class="btn btn-ghost" id="leafly-link" href="#" target="_blank" rel="noopener">
+          🔗 View on Leafly
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE / EDIT FAVORITE MODAL -->
+  <div class="modal-overlay hidden" id="fav-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('fav-modal')">✕</button>
+      <h3 id="fav-modal-title">Save to Collection</h3>
+      <form id="fav-form">
+        <input type="hidden" id="fav-id">
+        <input type="hidden" id="fav-strain-id">
+
+        <label>Rating
+          <div class="star-rating" id="star-rating">
+            <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span>
+            <span data-v="4">★</span><span data-v="5">★</span>
+          </div>
+          <input type="hidden" id="fav-rating" value="">
+        </label>
+
+        <label>Personal Notes
+          <textarea id="fav-notes" rows="4" placeholder="How did it make you feel? Good for what? Context?"></textarea>
+        </label>
+
+        <label>Date Tried
+          <input type="date" id="fav-date">
+        </label>
+
+        <label>Experienced Effects
+          <div class="effects-picker" id="effects-picker"></div>
+        </label>
+
+        <label class="toggle-label">Would Try Again
+          <label class="toggle">
+            <input type="checkbox" id="fav-try-again" checked>
+            <span class="slider"></span>
+          </label>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-ghost" onclick="closeModal('fav-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD CUSTOM STRAIN MODAL -->
+  <div class="modal-overlay hidden" id="custom-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('custom-modal')">✕</button>
+      <h3>Add Custom Strain</h3>
+      <form id="custom-form">
+        <div class="form-row">
+          <label>Name *
+            <input type="text" id="c-name" required placeholder="e.g. Wedding Crasher">
+          </label>
+          <label>Type *
+            <select id="c-type" required>
+              <option value="">Select type</option>
+              <option value="sativa">Sativa</option>
+              <option value="indica">Indica</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>THC % Min
+            <input type="number" id="c-thc-min" min="0" max="40" step="0.1" placeholder="0">
+          </label>
+          <label>THC % Max
+            <input type="number" id="c-thc-max" min="0" max="40" step="0.1" placeholder="0">
+          </label>
+          <label>CBD % Max
+            <input type="number" id="c-cbd-max" min="0" max="25" step="0.1" placeholder="1">
+          </label>
+        </div>
+        <label>Effects (comma-separated)
+          <input type="text" id="c-effects" placeholder="Relaxed, Happy, Creative">
+        </label>
+        <label>Flavors (comma-separated)
+          <input type="text" id="c-flavors" placeholder="Sweet, Earthy, Pine">
+        </label>
+        <label>Terpenes (comma-separated)
+          <input type="text" id="c-terpenes" placeholder="Myrcene, Caryophyllene">
+        </label>
+        <label>Description
+          <textarea id="c-desc" rows="3" placeholder="Notes about this strain's origins, appearance, effects…"></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Strain</button>
+          <button type="button" class="btn btn-ghost" onclick="closeModal('custom-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- WEB SEARCH MODAL -->
+  <div class="modal-overlay hidden" id="web-modal">
+    <div class="modal modal-wide">
+      <button class="modal-close" onclick="closeModal('web-modal')">✕</button>
+      <h3>🌐 Web Search</h3>
+      <div class="web-search-box">
+        <input type="text" id="web-query" placeholder="Enter strain name to search the web…">
+        <button class="btn btn-primary" id="btn-do-web-search">Search</button>
+      </div>
+      <div id="web-results"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

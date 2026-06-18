@@ -1,0 +1,4 @@
+node_modules/
+strains.db
+*.db-shm
+*.db-wal

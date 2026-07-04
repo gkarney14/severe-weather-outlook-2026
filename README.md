@@ -17,6 +17,8 @@ The Severe Weather Outlook Dashboard provides meteorologists, weather enthusiast
 - **Interactive maps** from official NOAA/NWS services
 - **Location-based search** by city/state or ZIP code
 - **Geolocation support** for automatic location detection
+- **Current conditions & 8-period forecast** via the Open-Meteo API
+- **Auto-refresh** with a configurable interval so the dashboard stays current without manual reloads
 
 ## Data Sources
 
@@ -81,20 +83,30 @@ This application uses **official government data** exclusively:
 - **Dark Theme**: Optimized for readability and reduced eye strain
 - **Accessibility**: WCAG compliant color contrasts and semantic HTML
 
+### 🌤️ Current Conditions & Forecast
+- **Live Observations**: Temperature, humidity, wind, gusts, and pressure via [Open-Meteo](https://open-meteo.com)
+- **8-Period Forecast**: Short-range outlook alongside the SPC threat summary
+
+### 🔁 Auto-Refresh
+- **Configurable Interval**: Automatically re-run the current search on a timer (dropdown in the header)
+- **Manual Refresh**: One-click refresh button for on-demand updates
+
 ## Installation
 
 ### Quick Start (Static File)
 Simply open `index.html` in a modern web browser:
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/severe-weather-outlook.git
-cd severe-weather-outlook
+git clone https://github.com/gkarney14/severe-weather-outlook-2026.git
+cd severe-weather-outlook-2026
 
 # Open in browser
 open index.html
 # or
 firefox index.html
 ```
+
+> Note: the repo also contains `severe-weather-outlook.html`, an earlier snapshot kept for reference. `index.html` is the actively maintained entry point.
 
 ### Local Development Server
 For development with live reload:
@@ -117,24 +129,29 @@ Then visit: `http://localhost:8000`
 2. Go to Repository Settings → Pages
 3. Select "main" branch as source
 4. Enable GitHub Pages
-5. Access at: `https://yourusername.github.io/severe-weather-outlook`
+5. Access at: `https://gkarney14.github.io/severe-weather-outlook-2026/`
 
 ## Usage
 
 ### Search by City & State
 1. Enter location in format: "Oklahoma City, OK"
-2. Click "Analyze Threats" or press Enter
+2. Click "GET OUTLOOK" or press Enter
 3. View threat analysis and alerts for that location
 
 ### Search by ZIP Code
 1. Enter 5-digit ZIP code (e.g., 73102)
-2. Click "Analyze Threats"
+2. Click "GET OUTLOOK"
 3. Results displayed for that postal code area
 
 ### Use Current Location
-1. Click "📡 Use Current Location"
+1. Click the 🎯 button next to the search box
 2. Grant geolocation permissions (browser prompt)
 3. Dashboard updates with your current location's threats
+
+### Auto-Refresh
+1. Choose an interval from the refresh dropdown in the header
+2. The dashboard re-runs your last search automatically on that schedule
+3. Use the ↺ button at any time to refresh immediately
 
 ### Interpreting Threat Levels
 
@@ -179,17 +196,17 @@ Layers: Day 1-8 outlooks, probabilistic and categorical
 
 ### Project Structure
 ```
-severe-weather-outlook/
-├── index.html              # Main application file
-├── README.md               # This file
-├── LICENSE                 # MIT License
-├── .gitignore              # Git ignore rules
-├── CONTRIBUTING.md         # Contribution guidelines
-├── API_REFERENCE.md        # Detailed API documentation
-└── docs/
-    ├── setup-guide.md      # Setup instructions
-    ├── deployment.md       # Deployment guide
-    └── architecture.md     # Technical architecture
+severe-weather-outlook-2026/
+├── index.html                   # Main application (actively maintained)
+├── severe-weather-outlook.html  # Earlier snapshot, kept for reference
+├── package.json                 # npm scripts for local serving (no build step)
+├── README.md                    # This file
+├── QUICKSTART.md                # Quick setup instructions
+├── DEPLOYMENT.md                # Deployment guide
+├── ARCHITECTURE.md              # Technical architecture
+├── API_REFERENCE.md             # Detailed API documentation
+├── CONTRIBUTING.md              # Contribution guidelines
+└── LICENSE                      # MIT License
 ```
 
 ### Technology Stack
@@ -350,13 +367,9 @@ For emergencies, call 911 or your local emergency services.
 
 ## Contact & Social
 
-- 📧 Email: contact@example.com
-- 🐦 Twitter: [@weatheroutlook](https://twitter.com)
-- 💬 Discussions: [GitHub Discussions](https://github.com)
-- 🌐 Website: [Example.com](https://example.com)
+- 🐛 Issues: [GitHub Issues](https://github.com/gkarney14/severe-weather-outlook-2026/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/gkarney14/severe-weather-outlook-2026/discussions)
 
 ---
 
 **Made with ❤️ for severe weather awareness and safety**
-
-*Last Updated: May 2026*
